@@ -1,16 +1,5 @@
 package com.csb.kafka;
 
-import org.I0Itec.zkclient.ZkClient;
-import org.I0Itec.zkclient.ZkConnection;
-
-import com.CSB.Kafka.CSBTopicCreator;
-
-import java.util.Properties;
-
-import kafka.admin.AdminUtils;
-import kafka.utils.ZKStringSerializer$;
-import kafka.utils.ZkUtils;
-
 public class TopicCreationTest {
 
   public static void main(String[] args) {
