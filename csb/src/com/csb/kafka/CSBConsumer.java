@@ -3,7 +3,6 @@ package com.csb.kafka;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -66,33 +65,5 @@ public class CSBConsumer {
                 }
             }
         }).start();
-    }
-
-    private class Consumer implements Runnable {
-        @Override
-        public void run() {
-
-        }
-    }
-
-    public static void main(String[] args) {
-        BasicConfigurator.configure();
-//		Properties props = new Properties();
-//		props.put("bootstrap.servers", "localhost:9092");
-//		props.put("group.id", "group-1");
-//		props.put("enable.auto.commit", "true");
-//		props.put("auto.commit.interval.ms", "1000");
-//		props.put("auto.offset.reset", "earliest");
-//		props.put("session.timeout.ms", "30000");
-//		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//		props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-
-//        Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.CONSUMER_DEV);
-//        KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(prop);
-//
-//        //CSBConsumer csbConsumer = new CSBConsumer();
-//        kafkaConsumer.subscribe(Arrays.asList("test-topic1"));
-//        kafkaConsumer.subscribe(Arrays.asList("my-topic2"));
-
     }
 }
