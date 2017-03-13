@@ -65,10 +65,12 @@ public class CSBTest {
                 counter[0]++;
             }
         });
+        consumer1.start();
+        consumer2.start();
 
         int waited = 0;
         while (waited < MAX_TIMEOUT) {
-            if (counter[0] == 2) {
+            if (counter[0] != 2) {
                 Thread.sleep(DEFAULT_SLEEP);
                 waited += DEFAULT_SLEEP;
             }
