@@ -31,6 +31,11 @@ public class CSBProducer {
         }
 	}
 
+    public void sendMsgNoWait(String topic, String msg) throws Exception {
+        sendMsg(topic, msg);
+        producer.flush();
+    }
+
 	public void close() {
         logger.info("Closing the consumer");
         producer.close();
