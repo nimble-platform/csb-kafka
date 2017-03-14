@@ -29,8 +29,6 @@ public class CSBConsumer {
     private final HashMap<String, List<MessageHandler>> topicToHandlers = new HashMap<>();
     private final KafkaConsumer<String, String> consumer;
     private final String zkConnectionString;
-    private final int zkSessionTimeout = 10 * 1000;
-    private final int zkConnectionTimeout = 5 * 1000;
 
     private boolean activated;
     private boolean closed;
@@ -104,12 +102,11 @@ public class CSBConsumer {
         return serverTopics.containsKey(topic);
     }
 
-
     private void createTopic(String topic) {
         logger.info(String.format("Creating topic named '%s'", topic));
         ZkClient zkClient = null;
         try {
-            zkClient = new ZkClient(zkConnectionString, zkSessionTimeout, zkConnectionTimeout, ZKStringSerializer$.MODULE$);
+            zkClient = new ZkClient(zkConnectionString, 10000, 5000, ZKStringSerializer$.MODULE$);
             ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkConnectionString), false);
 
             int noOfPartitions = 1;
@@ -129,7 +126,6 @@ public class CSBConsumer {
     public boolean isActivated() {
         return activated;
     }
-
 
     public void close() {
         if (!activated) {
