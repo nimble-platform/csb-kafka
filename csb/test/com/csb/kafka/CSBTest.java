@@ -33,7 +33,7 @@ public class CSBTest {
 
     @Test(expected = IllegalAccessError.class)
     public void failOnStartingWithoutRegistering() throws Exception {
-        CSBConsumer consumer2 = new CSBConsumer();
+        CSBConsumer consumer2 = new CSBConsumer("TEST_GROUP");
         consumer2.start();
     }
 

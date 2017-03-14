@@ -9,33 +9,39 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.PartitionInfo;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 public class CSBConsumer {
-    final static Logger logger = Logger.getLogger(CSBConsumer.class);
-    final private Object consumeSync = new Object();
+    private final static Logger logger = Logger.getLogger(CSBConsumer.class);
+    private final Object consumeSync = new Object();
 
-    final private HashMap<String, List<MessageHandler>> topicToHandlers = new HashMap<>();
-    final private KafkaConsumer<String, String> consumer;
+    private final HashMap<String, List<MessageHandler>> topicToHandlers = new HashMap<>();
+    private final KafkaConsumer<String, String> consumer;
+    private final ZkClient zkClient;
+    private final String zkConnectionString;
+
     private boolean activated;
     private boolean closed;
-
-    public CSBConsumer() {
-        Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.CONSUMER_DEV);
-        consumer = new KafkaConsumer<>(prop);
-    }
 
     public CSBConsumer(String groupId) {
         Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.CONSUMER_DEV);
         prop.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         consumer = new KafkaConsumer<>(prop);
+
+        zkConnectionString = prop.getProperty("zookeeper.connection.string");
+        int sessionTimeOutInMs = 15 * 1000;
+        int connectionTimeOutInMs = 10 * 1000;
+
+        zkClient = new ZkClient(zkConnectionString, sessionTimeOutInMs, connectionTimeOutInMs, ZKStringSerializer$.MODULE$);
     }
 
     public void register(String topic, MessageHandler messageHandler) {
@@ -44,6 +50,9 @@ public class CSBConsumer {
         synchronized (CSBConsumer.class) {
             List<MessageHandler> handlers = topicToHandlers.computeIfAbsent(topic, k -> new LinkedList<>());
             handlers.add(messageHandler);
+        }
+        if (!isTopicExists(topic)) {
+            createTopic(topic);
         }
 
         Set<String> topics = consumer.subscription();
@@ -88,23 +97,21 @@ public class CSBConsumer {
         }).start();
     }
 
+    private boolean isTopicExists(String topic) {
+        Map<String, List<PartitionInfo>> serverTopics = consumer.listTopics();
+        return serverTopics.containsKey(topic);
+    }
 
-    private void createTopic(String topicName) {
-        ZkClient zkClient = null;
-        ZkUtils zkUtils = null;
+
+    private void createTopic(String topic) {
+        logger.info(String.format("Creating topic named '%s'", topic));
         try {
-            String zookeeperHosts = "192.168.56.101:2181"; // If multiple zookeeper then -> String zookeeperHosts = "192.168.20.1:2181,192.168.20.2:2181";
-            int sessionTimeOutInMs = 15 * 1000; // 15 secs
-            int connectionTimeOutInMs = 10 * 1000; // 10 secs
-
-            zkClient = new ZkClient(zookeeperHosts, sessionTimeOutInMs, connectionTimeOutInMs, ZKStringSerializer$.MODULE$);
-            zkUtils = new ZkUtils(zkClient, new ZkConnection(zookeeperHosts), false);
+            ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkConnectionString), false);
 
             int noOfPartitions = 2;
             int noOfReplication = 3;
             Properties topicConfiguration = new Properties();
-
-            AdminUtils.createTopic(zkUtils, topicName, noOfPartitions, noOfReplication, topicConfiguration, null);
+            AdminUtils.createTopic(zkUtils, topic, noOfPartitions, noOfReplication, topicConfiguration, null);
 
         } catch (Exception ex) {
             ex.printStackTrace();
