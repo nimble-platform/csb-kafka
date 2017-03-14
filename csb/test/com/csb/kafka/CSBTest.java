@@ -21,14 +21,16 @@ public class CSBTest {
 
     @Test
     public void testReceiveOneMessage() throws Exception {
-        final boolean[] message_received = {false};
-        consumer.register(TEST_TOPIC, message -> message_received[0] = true);
+        String testMessage = "This is a test message " + new Random().nextInt();
+        MessageCounter mc = new MessageCounter(testMessage);
+
+        consumer.register(TEST_TOPIC, mc);
 //        producer.sendMsgNoWait(TEST_TOPIC, "test_message");
         consumer.start();
-        producer.sendMsg(TEST_TOPIC, "test_message" + new Random().nextInt(), false);
+        producer.sendMsgNoWait(TEST_TOPIC, testMessage);
 
-        awaitEqualsOrReturn(message_received[0], Boolean.TRUE);
-        Assert.assertTrue(message_received[0]);
+        awaitEqualsOrReturn(mc, 1);
+        Assert.assertTrue(mc.getCounter() == 1);
     }
 
     @Test(expected = IllegalAccessError.class)
@@ -44,34 +46,28 @@ public class CSBTest {
 
         Random r = new Random();
         String randomNumber = String.valueOf(r.nextInt());
-        String RANDOM_TOPIC = TEST_TOPIC + randomNumber;
+//        String RANDOM_TOPIC = TEST_TOPIC + randomNumber;
+        String RANDOM_TOPIC = TEST_TOPIC + "777";
 
-        final Integer[] counter = new Integer[]{0};
-        consumer1.register(RANDOM_TOPIC, message -> {
-            if (message.equals(randomNumber)) {
-                counter[0] = new Integer(counter[0] + 1);
-            }
-        });
-        consumer2.register(RANDOM_TOPIC, message -> {
-            if (message.equals(randomNumber)) {
-                counter[0] = new Integer(counter[0] + 1);
-            }
-        });
+        MessageCounter messageCounter = new MessageCounter(randomNumber);
+
+        consumer1.register(RANDOM_TOPIC, messageCounter);
+        consumer2.register(RANDOM_TOPIC, messageCounter);
         consumer1.start();
         consumer2.start();
         producer.sendMsgNoWait(RANDOM_TOPIC, randomNumber);
 
-        awaitEqualsOrReturn(counter[0], 2);
-        Assert.assertSame(2, counter[0]);
+        awaitEqualsOrReturn(messageCounter, 2);
+        Assert.assertTrue(messageCounter.getCounter() == 2);
 
         consumer1.close();
         consumer2.close();
     }
 
-    private void awaitEqualsOrReturn(Object a, Object b) throws InterruptedException {
+    private void awaitEqualsOrReturn(MessageCounter mc, int expectedCount) throws InterruptedException {
         int waited = 0;
         while (waited < MAX_TIMEOUT) {
-            if (a.equals(b)) {
+            if (mc.getCounter() == expectedCount) {
                 break;
             } else {
                 Thread.sleep(DEFAULT_SLEEP);
@@ -102,6 +98,28 @@ public class CSBTest {
     @AfterClass
     public static void cleanUp() {
         producer.close();
-        consumer.close();
+        if (consumer.isActivated()) {
+            consumer.close();
+        }
+    }
+
+    private class MessageCounter implements MessageHandler {
+        private final String expectedMsg;
+        private int counter = 0;
+
+        public MessageCounter(String expectedMsg) {
+            this.expectedMsg = expectedMsg;
+        }
+
+        @Override
+        synchronized public void handle(String message) {
+            if (message.equals(expectedMsg)) {
+                counter++;
+            }
+        }
+
+        public int getCounter() {
+            return counter;
+        }
     }
 }

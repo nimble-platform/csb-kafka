@@ -22,12 +22,15 @@ import java.util.Set;
 
 public class CSBConsumer {
     private final static Logger logger = Logger.getLogger(CSBConsumer.class);
-    private final Object consumeSync = new Object();
+    private final Object consumerSync = new Object();
+    private final Object handlersSync = new Object();
+    private final static Object topicsSync = new Object();
 
     private final HashMap<String, List<MessageHandler>> topicToHandlers = new HashMap<>();
     private final KafkaConsumer<String, String> consumer;
-    private final ZkClient zkClient;
     private final String zkConnectionString;
+    private final int zkSessionTimeout = 10 * 1000;
+    private final int zkConnectionTimeout = 5 * 1000;
 
     private boolean activated;
     private boolean closed;
@@ -38,21 +41,20 @@ public class CSBConsumer {
         consumer = new KafkaConsumer<>(prop);
 
         zkConnectionString = prop.getProperty("zookeeper.connection.string");
-        int sessionTimeOutInMs = 15 * 1000;
-        int connectionTimeOutInMs = 10 * 1000;
-
-        zkClient = new ZkClient(zkConnectionString, sessionTimeOutInMs, connectionTimeOutInMs, ZKStringSerializer$.MODULE$);
     }
 
     public void register(String topic, MessageHandler messageHandler) {
         logger.info(String.format("Registering message handler of type %s for topic %s", messageHandler.getClass(), topic));
 
-        synchronized (CSBConsumer.class) {
+        synchronized (topicsSync) {
+            if (!isTopicExists(topic)) {
+                createTopic(topic);
+            }
+        }
+
+        synchronized (handlersSync) {
             List<MessageHandler> handlers = topicToHandlers.computeIfAbsent(topic, k -> new LinkedList<>());
             handlers.add(messageHandler);
-        }
-        if (!isTopicExists(topic)) {
-            createTopic(topic);
         }
 
         Set<String> topics = consumer.subscription();
@@ -77,7 +79,7 @@ public class CSBConsumer {
 
         new Thread(() -> {
             while (!closed) {
-                synchronized (consumeSync) {
+                synchronized (consumerSync) {
                     ConsumerRecords<String, String> records = consumer.poll(100);
                     for (ConsumerRecord<String, String> record : records) {
                         String topic = record.topic();
@@ -86,7 +88,7 @@ public class CSBConsumer {
                             logger.error(String.format("Received record on topic '%s' with handlers empty", topic));
                             continue;
                         }
-                        synchronized (CSBConsumer.class) {
+                        synchronized (handlersSync) {
                             for (MessageHandler handler : handlers) {
                                 handler.handle(record.value());
                             }
@@ -105,11 +107,13 @@ public class CSBConsumer {
 
     private void createTopic(String topic) {
         logger.info(String.format("Creating topic named '%s'", topic));
+        ZkClient zkClient = null;
         try {
+            zkClient = new ZkClient(zkConnectionString, zkSessionTimeout, zkConnectionTimeout, ZKStringSerializer$.MODULE$);
             ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkConnectionString), false);
 
-            int noOfPartitions = 2;
-            int noOfReplication = 3;
+            int noOfPartitions = 1;
+            int noOfReplication = 1;
             Properties topicConfiguration = new Properties();
             AdminUtils.createTopic(zkUtils, topic, noOfPartitions, noOfReplication, topicConfiguration, null);
 
@@ -122,6 +126,10 @@ public class CSBConsumer {
         }
     }
 
+    public boolean isActivated() {
+        return activated;
+    }
+
 
     public void close() {
         if (!activated) {
@@ -129,7 +137,7 @@ public class CSBConsumer {
         }
         closed = true;
 
-        synchronized (consumeSync) {
+        synchronized (consumerSync) {
             consumer.close();
         }
     }
