@@ -46,7 +46,8 @@ public class CSBConsumer {
 
         synchronized (topicsSync) {
             if (!isTopicExists(topic)) {
-                createTopic(topic);
+                throw new UnsupportedOperationException("Unable to register to non existing topic for now");
+//                new Thread(() -> createTopic(topic)).start();
             }
         }
 
@@ -108,13 +109,12 @@ public class CSBConsumer {
         try {
             zkClient = new ZkClient(zkConnectionString, 10000, 5000, ZKStringSerializer$.MODULE$);
             ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkConnectionString), false);
-
             int noOfPartitions = 1;
             int noOfReplication = 1;
             Properties topicConfiguration = new Properties();
-            AdminUtils.createTopic(zkUtils, topic, noOfPartitions, noOfReplication, topicConfiguration, null);
-
+            AdminUtils.createTopic(zkUtils, topic, noOfPartitions, noOfReplication, topicConfiguration, AdminUtils.createTopic$default$6());
         } catch (Exception ex) {
+            logger.error(String.format("Exception '%s' on creating topic '%s'", ex.getMessage(), topic));
             ex.printStackTrace();
         } finally {
             if (zkClient != null) {

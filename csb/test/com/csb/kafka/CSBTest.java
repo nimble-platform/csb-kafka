@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
@@ -23,11 +25,10 @@ public class CSBTest {
     public void testReceiveOneMessage() throws Exception {
         String testMessage = "This is a test message " + new Random().nextInt();
         MessageCounter mc = new MessageCounter(testMessage);
+        producer.sendMsgNoWait(TEST_TOPIC, testMessage);
 
         consumer.register(TEST_TOPIC, mc);
-//        producer.sendMsgNoWait(TEST_TOPIC, "test_message");
         consumer.start();
-        producer.sendMsgNoWait(TEST_TOPIC, testMessage);
 
         awaitEqualsOrReturn(mc, 1);
         Assert.assertTrue(mc.getCounter() == 1);
@@ -41,13 +42,14 @@ public class CSBTest {
 
     @Test
     public void testTwoConsumersReceiveSameMessage() throws Exception {
+
         CSBConsumer consumer1 = new CSBConsumer("GROUP_1");
         CSBConsumer consumer2 = new CSBConsumer("GROUP_2");
 
         Random r = new Random();
         String randomNumber = String.valueOf(r.nextInt());
-//        String RANDOM_TOPIC = TEST_TOPIC + randomNumber;
-        String RANDOM_TOPIC = TEST_TOPIC + "777";
+        String RANDOM_TOPIC = TEST_TOPIC + randomNumber;
+        producer.sendMsgNoWait(RANDOM_TOPIC, randomNumber);
 
         MessageCounter messageCounter = new MessageCounter(randomNumber);
 
@@ -55,7 +57,6 @@ public class CSBTest {
         consumer2.register(RANDOM_TOPIC, messageCounter);
         consumer1.start();
         consumer2.start();
-        producer.sendMsgNoWait(RANDOM_TOPIC, randomNumber);
 
         awaitEqualsOrReturn(messageCounter, 2);
         Assert.assertTrue(messageCounter.getCounter() == 2);
@@ -89,8 +90,7 @@ public class CSBTest {
 
     @BeforeClass
     public static void setUp() {
-//        TEST_TOPIC = "test_topic_" + new Data();
-        TEST_TOPIC = "test_topic_222";
+        TEST_TOPIC = "test_topic_" + (new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date()));
         producer = new CSBProducer();
         consumer = new CSBConsumer(UUID.randomUUID().toString());
     }
