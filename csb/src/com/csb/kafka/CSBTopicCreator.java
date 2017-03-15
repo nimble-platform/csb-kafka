@@ -1,14 +1,13 @@
 package com.csb.kafka;
 
+import kafka.admin.AdminUtils;
+import kafka.utils.ZKStringSerializer$;
+import kafka.utils.ZkUtils;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.kafka.common.errors.TopicExistsException;
 
 import java.util.Properties;
-
-import kafka.admin.AdminUtils;
-import kafka.utils.ZKStringSerializer$;
-import kafka.utils.ZkUtils;
 
 public class CSBTopicCreator {
 
@@ -75,8 +74,8 @@ public class CSBTopicCreator {
 		 * new ZkConnection(zookeeperConnect), isSecureKafkaCluster);
 		 */
 		CSBTopicCreator csbTopicCreator = new CSBTopicCreator();
-		String topic = "my-topic10";
-		/*
+        String topic = "my_test_topic";
+        /*
 		 * int partitions = 1; int replication = 1; Properties topicConfig = new
 		 * Properties(); // add per-topic // configurations settings // here
 		 * AdminUtils.createTopic(zkUtils, topic, partitions, replication,
