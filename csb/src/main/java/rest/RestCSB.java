@@ -7,6 +7,7 @@ import static spark.Spark.get;
  */
 public class RestCSB {
     public RestCSB() {
+
     }
 
     public void start() {
