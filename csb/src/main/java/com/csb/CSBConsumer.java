@@ -1,4 +1,4 @@
-package com.csb.kafka;
+package com.csb;
 
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;

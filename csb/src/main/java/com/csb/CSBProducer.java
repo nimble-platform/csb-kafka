@@ -1,4 +1,4 @@
-package com.csb.kafka;
+package com.csb;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;

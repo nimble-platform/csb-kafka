@@ -1,4 +1,4 @@
-package com.csb.kafka;
+package com.csb;
 
 import org.junit.AfterClass;
 import org.junit.Assert;

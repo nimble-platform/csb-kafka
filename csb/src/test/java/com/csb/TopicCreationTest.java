@@ -1,4 +1,4 @@
-package com.csb.kafka;
+package com.csb;
 
 public class TopicCreationTest {
 

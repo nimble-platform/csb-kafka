@@ -1,4 +1,4 @@
-package com.csb.kafka;
+package com.csb;
 
 import org.apache.log4j.Logger;
 

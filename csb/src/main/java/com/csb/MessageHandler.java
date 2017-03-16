@@ -1,4 +1,4 @@
-package com.csb.kafka;
+package com.csb;
 
 /**
  * Created by evgeniyh on 12/03/17.
