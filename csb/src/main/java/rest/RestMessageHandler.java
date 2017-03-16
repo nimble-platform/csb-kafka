@@ -2,6 +2,9 @@ package rest;
 
 import com.csb.MessageHandler;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -27,7 +30,10 @@ public class RestMessageHandler implements MessageHandler {
             OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
             out.write("Resource content");
             out.close();
-            httpCon.getInputStream();
+            InputStream stream = httpCon.getInputStream();
+            BufferedReader buf = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }

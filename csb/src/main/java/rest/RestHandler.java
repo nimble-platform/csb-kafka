@@ -10,11 +10,10 @@ public class RestHandler {
     public static void main(String[] args) {
         port(9191);
         put("/handler/:topic/:message", (request, response) -> {
-            String topic = request.params().get("topic");
-            String message = request.params().get("message");
-            String msg = String.format("Received message '%s' from topic '%s'", message, topic);
-            System.out.println(msg);
-            return msg;
+            String topic = request.params().get(":topic");
+            String message = request.params().get(":message");
+
+            return String.format("Received message '%s' from topic '%s'", message, topic);
         });
     }
 }

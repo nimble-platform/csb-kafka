@@ -14,7 +14,7 @@ public class RestCSB implements AutoCloseable {
     private final CSBConsumer consumer;
 
     public RestCSB() {
-        consumer = new CSBConsumer("rest_consumer");
+        consumer = new CSBConsumer("rest_consumer_1");
         consumer.start();
     }
 
@@ -71,7 +71,7 @@ public class RestCSB implements AutoCloseable {
     private String registerToTopic(String topic, String handlerUrl) {
         try {
             consumer.register(topic, new RestMessageHandler(handlerUrl));
-            return String.format("Successfully Registered to topic '%s'", "SD");
+            return String.format("Successfully Registered to topic '%s'", topic);
         } catch (Exception e) {
             e.printStackTrace();
             return "Failed to register to topic";
