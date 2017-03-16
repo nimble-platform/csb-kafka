@@ -3,6 +3,7 @@ package com.csb;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -34,6 +35,7 @@ public class CSBTest {
         Assert.assertTrue(mc.getCounter() == 1);
     }
 
+    @Ignore
     @Test(expected = IllegalAccessError.class)
     public void failOnStartingWithoutRegistering() throws Exception {
         CSBConsumer consumer2 = new CSBConsumer("TEST_GROUP");

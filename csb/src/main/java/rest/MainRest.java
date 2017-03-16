@@ -5,6 +5,11 @@ package rest;
  */
 public class MainRest {
     public static void main(String[] args) {
-        new RestCSB().start();
+        try (RestCSB csb = new RestCSB()) {
+            csb.start();
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 }

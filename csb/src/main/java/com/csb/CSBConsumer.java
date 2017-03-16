@@ -41,6 +41,8 @@ public class CSBConsumer {
         zkConnectionString = prop.getProperty("zookeeper.connection.string");
     }
 
+    //    TODO: fix the issue with creating a non existing topic
+//    TODO: make a list of registered topics which don't exist yet (to subscribe later)
     public void register(String topic, MessageHandler messageHandler) {
         logger.info(String.format("Registering message handler of type %s for topic %s", messageHandler.getClass(), topic));
 
@@ -68,9 +70,6 @@ public class CSBConsumer {
     }
 
     public void start() {
-        if (topicToHandlers.size() == 0) {
-            throw new IllegalAccessError("Must first subscribe to at least one topic");
-        }
         if (activated) {
             throw new IllegalAccessError("Start can be called only once");
         }
@@ -79,6 +78,9 @@ public class CSBConsumer {
         new Thread(() -> {
             while (!closed) {
                 synchronized (consumerSync) {
+                    if (consumer.subscription().isEmpty()) {
+                        continue;
+                    }
                     ConsumerRecords<String, String> records = consumer.poll(100);
                     for (ConsumerRecord<String, String> record : records) {
                         String topic = record.topic();
