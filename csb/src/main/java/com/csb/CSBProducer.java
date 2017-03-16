@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
-public class CSBProducer {
+public class CSBProducer implements AutoCloseable {
     final static Logger logger = Logger.getLogger(CSBProducer.class);
 
     private Producer<String, String> producer = null;
@@ -40,6 +40,7 @@ public class CSBProducer {
         producer.flush();
     }
 
+    @Override
     public void close() {
         logger.info("Closing the consumer");
         producer.close();

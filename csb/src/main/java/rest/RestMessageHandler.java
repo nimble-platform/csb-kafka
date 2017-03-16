@@ -19,7 +19,7 @@ public class RestMessageHandler implements MessageHandler {
     @Override
     public void handle(String message) {
         try {
-            URL url = new URL("http://www.example.com/resource");
+            URL url = new URL(handlerUrl + message);
             HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
             httpCon.setDoOutput(true);
             httpCon.setRequestMethod("PUT");
@@ -28,7 +28,7 @@ public class RestMessageHandler implements MessageHandler {
             out.close();
             httpCon.getInputStream();
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         }
     }
 }
