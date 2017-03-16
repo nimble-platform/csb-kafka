@@ -1,7 +1,9 @@
+package rest;
+
 /**
- * Created by evgeniyh on 15/03/17.
+ * Created by evgeniyh on 16/03/17.
  */
-public class RestConsumer {
+public class MainRest {
     public static void main(String[] args) {
         new RestCSB().start();
     }

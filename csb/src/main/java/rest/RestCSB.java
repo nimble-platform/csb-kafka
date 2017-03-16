@@ -1,3 +1,5 @@
+package rest;
+
 import static spark.Spark.get;
 
 /**
@@ -5,7 +7,6 @@ import static spark.Spark.get;
  */
 public class RestCSB {
     public RestCSB() {
-//        Csb
     }
 
     public void start() {
