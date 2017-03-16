@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-public class CSBConsumer {
+public class CSBConsumer implements AutoCloseable {
     private final static Logger logger = Logger.getLogger(CSBConsumer.class);
     private final Object consumerSync = new Object();
     private final Object handlersSync = new Object();
@@ -129,6 +129,7 @@ public class CSBConsumer {
         return activated;
     }
 
+    @Override
     public void close() {
         if (!activated) {
             throw new IllegalAccessError("Can't close without calling start");
