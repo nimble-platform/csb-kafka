@@ -67,20 +67,28 @@ public class CSBConsumer implements AutoCloseable {
             logger.info(String.format("Adding new topic '%s' to the consumer", topic));
             consumer.subscribe(newTopics);
         }
+        if (!activated) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            start();
+        }
     }
 
     public void start() {
         if (activated) {
             throw new IllegalAccessError("Start can be called only once");
         }
+        if (consumer.subscription().isEmpty()) {
+            return; // Can't actually start until subscribe to at least one topic
+        }
         activated = true;
 
         new Thread(() -> {
             while (!closed) {
                 synchronized (consumerSync) {
-                    if (consumer.subscription().isEmpty()) {
-                        continue;
-                    }
                     ConsumerRecords<String, String> records = consumer.poll(100);
                     for (ConsumerRecord<String, String> record : records) {
                         String topic = record.topic();

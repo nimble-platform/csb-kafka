@@ -1,5 +1,6 @@
 package rest;
 
+import static spark.Spark.port;
 import static spark.Spark.put;
 
 /**
@@ -7,6 +8,7 @@ import static spark.Spark.put;
  */
 public class RestHandler {
     public static void main(String[] args) {
+        port(9191);
         put("/handler/:topic/:message", (request, response) -> {
             String topic = request.params().get("topic");
             String message = request.params().get("message");

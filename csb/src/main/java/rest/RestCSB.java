@@ -11,10 +11,15 @@ import static spark.Spark.put;
  * Created by evgeniyh on 15/03/17.
  */
 public class RestCSB implements AutoCloseable {
+    private final CSBConsumer consumer;
+
     public RestCSB() {
+        consumer = new CSBConsumer("rest_consumer");
+        consumer.start();
     }
 
     //    TODO: add mapping for clients
+
     public void start() {
         put("/consumer/register/:topic", (request, response) -> {
             String topic = request.params().get(":topic");
@@ -64,7 +69,7 @@ public class RestCSB implements AutoCloseable {
     }
 
     private String registerToTopic(String topic, String handlerUrl) {
-        try (CSBConsumer consumer = new CSBConsumer("rest_consumer")) {
+        try {
             consumer.register(topic, new RestMessageHandler(handlerUrl));
             return String.format("Successfully Registered to topic '%s'", "SD");
         } catch (Exception e) {
@@ -75,5 +80,6 @@ public class RestCSB implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
+        consumer.close();
     }
 }

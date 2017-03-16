@@ -5,6 +5,7 @@ import com.csb.MessageHandler;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * Created by evgeniyh on 16/03/17.
@@ -19,7 +20,7 @@ public class RestMessageHandler implements MessageHandler {
     @Override
     public void handle(String message) {
         try {
-            URL url = new URL(handlerUrl + message);
+            URL url = new URL(handlerUrl + URLEncoder.encode(message, "UTF-8"));
             HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
             httpCon.setDoOutput(true);
             httpCon.setRequestMethod("PUT");
