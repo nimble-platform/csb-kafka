@@ -22,6 +22,7 @@ public class CSBTest {
 
     private static String TEST_TOPIC = "test_topic_";
 
+    @Ignore
     @Test
     public void testReceiveOneMessage() throws Exception {
         String testMessage = "This is a test message " + new Random().nextInt();
@@ -42,6 +43,7 @@ public class CSBTest {
         consumer2.start();
     }
 
+    @Ignore
     @Test
     public void testTwoConsumersReceiveSameMessage() throws Exception {
 
