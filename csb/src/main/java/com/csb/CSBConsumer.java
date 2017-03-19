@@ -47,9 +47,11 @@ public class CSBConsumer implements AutoCloseable {
         logger.info(String.format("Registering message handler of type %s for topic %s", messageHandler.getClass(), topic));
 
         synchronized (topicsSync) {
-            if (!isTopicExists(topic)) {
-                throw new UnsupportedOperationException("Unable to register to non existing topic for now");
-//                new Thread(() -> createTopic(topic)).start();
+            if (isTopicExists(topic)) {
+                logger.info(String.format("Registering to existing topic '%s'", topic));
+            } else {
+                CSBTopicCreator.createTopicSync(zkConnectionString, topic, 1, 1);
+                logger.info(String.format("Creating topic '%s'", topic));
             }
         }
 
