@@ -5,7 +5,7 @@ import com.csb.CSBProducer;
 
 import java.util.Map;
 
-import static spark.Spark.put;
+import static spark.Spark.post;
 
 /**
  * Created by evgeniyh on 15/03/17.
@@ -21,13 +21,13 @@ public class RestCSB implements AutoCloseable {
     //    TODO: add mapping for clients
 
     public void start() {
-        put("/consumer/register/:topic", (request, response) -> {
+        post("/consumer/register/:topic", (request, response) -> {
             String topic = request.params().get(":topic");
             String handlerUrl = request.queryParams("handler");
             return registerToTopic(topic, handlerUrl);
         });
 
-        put("/consumer/register", (request, response) -> {
+        post("/consumer/register", (request, response) -> {
             String topic = request.queryParams("topic");
             String handlerUrl = request.queryParams("handler");
 
@@ -38,14 +38,14 @@ public class RestCSB implements AutoCloseable {
             }
         });
 
-        put("/producer/send/:topic/:message", (request, response) -> {
+        post("/producer/send/:topic/:message", (request, response) -> {
             Map<String, String> params = request.params();
             String topic = params.get(":topic");
             String message = params.get(":message");
             return sendMessage(topic, message);
         });
 
-        put("/producer/send", (request, response) -> {
+        post("/producer/send", (request, response) -> {
             String topic = request.queryParams("topic");
             String message = request.queryParams("message");
 

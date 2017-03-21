@@ -6,7 +6,7 @@ import static spark.Spark.put;
 /**
  * Created by evgeniyh on 16/03/17.
  */
-public class RestHandler {
+public class MessageReceiveListener {
     public static void main(String[] args) {
         System.out.println("Started listening on port 9191");
 

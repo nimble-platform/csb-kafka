@@ -73,7 +73,7 @@
                     <archive>
                         <manifest>
                             <!-- Jar file entry point -->
-                            <mainClass>rest.RestHandler</mainClass>
+                            <mainClass>rest.MessageReceiveListener</mainClass>
                         </manifest>
                     </archive>
 
@@ -86,7 +86,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>rest.RestHandler</mainClass>
+                            <mainClass>rest.MessageReceiveListener</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
