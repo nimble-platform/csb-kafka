@@ -4,11 +4,11 @@
     3. TopicCreator - Used for creating a topic (in a diferent blocking thread)
 
 #### Basic REST producer consumes flow
-When a consumer is subscribing to a topic named 'test_topic' then CSB will store the given url
-of the handler and when a message has been sent (by the producer) to the 'test_topic' CSB will
-activate the URL callback path and append the sent data to it. if for example if the handler
-URL was http&#58;//127.0.0.1:9191/handler/test_topic/ and data 'test_data' then it will create
-a post command http&#58;//127.0.0.1:9191/handler/rest_topic/test_data
+When a consumer is subscribing to a topic named 'test_topic' then CSB will store the given url  
+of the handler and when a message has been sent (by the producer) to the 'test_topic' CSB will  
+activate the URL callback path and append the sent data to it. if for example if the handler  
+URL was http&#58;//127.0.0.1:9191/handler/test_topic/ and data 'test_data' then it will create  
+a post command http&#58;//127.0.0.1:9191/handler/rest_topic/test_data  
 
 #### REST CSB
 ---
