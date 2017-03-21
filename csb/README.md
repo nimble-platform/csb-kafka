@@ -14,7 +14,7 @@ a post command `http://127.0.0.1:9191/handler/test_topic/test_data`
 ---
 #### Registering a handler to a specific topic
 By sending a post command with one of the following formats
-* [server_ip:server_port]/consumer/register?topic_name=[topic_name]&handler=[handler_url]
+* [server_ip:server_port]/consumer/register?topic=[topic_name]&handler=[handler_url]
 * [server_ip:server_port]/consumer/register/[topic_name]?handler=[handler_url]
 
 For example `http://127.0.0.1:4567/consumer/register/rest_topic?handler=http://127.0.0.1:9191/handler/rest_topic/`
