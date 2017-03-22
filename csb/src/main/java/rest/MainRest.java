@@ -8,6 +8,7 @@ public class MainRest {
         try {
             RestCSB csb = new RestCSB();
             csb.start();
+            System.out.println("Server started");
         } catch (Exception ex) {
             System.out.print(ex.getMessage());
             ex.printStackTrace();
