@@ -20,7 +20,7 @@ public class CSBTopicCreator {
 
         try {
             if (AdminUtils.topicExists(zkUtils, topicName)) {
-                System.out.println("Topic exists. name: {" + topicName + "}");
+                System.out.println(String.format("Registering to an existing topic '%s'", topicName));
             } else {
                 SyncTopicCreator creator = new SyncTopicCreator(zkUtils, topicName, partitions, replications);
                 new Thread(creator).start();
@@ -45,7 +45,7 @@ public class CSBTopicCreator {
         private final int partitions;
         private final int replications;
 
-        public SyncTopicCreator(ZkUtils zkUtils, String topicName, int partitions, int replications) {
+        SyncTopicCreator(ZkUtils zkUtils, String topicName, int partitions, int replications) {
             this.zkUtils = zkUtils;
             this.topicName = topicName;
             this.partitions = partitions;
