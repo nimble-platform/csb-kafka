@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="rest_server">
+  <artifact type="jar" name="rest_server">
     <output-path>$PROJECT_DIR$/out/artifacts/rest_server</output-path>
     <root id="archive" name="csb.jar">
       <element id="directory" name="META-INF">

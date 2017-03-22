@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="csb">
+  <artifact type="jar" name="csb">
     <output-path>$PROJECT_DIR$/out/artifacts/csb</output-path>
     <root id="archive" name="csb.jar">
       <element id="module-output" name="csb" />

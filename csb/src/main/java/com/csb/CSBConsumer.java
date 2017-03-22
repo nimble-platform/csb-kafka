@@ -55,27 +55,6 @@ public class CSBConsumer implements AutoCloseable {
         }
     }
 
-    private void subscribeConsumerIfNeeded(String topic) {
-        Set<String> topics = consumer.subscription();
-        if (topics.contains(topic)) {
-            logger.info(String.format("The consumer is already subscribed to topic '%s'", topic));
-        } else {
-            Set<String> newTopics = new HashSet<>(topics);
-            newTopics.add(topic);
-            logger.info(String.format("Adding new topic '%s' to the consumer", topic));
-            consumer.subscribe(newTopics);
-        }
-    }
-
-    private void createIfTopicMissing(String topic) {
-        if (isTopicExists(topic)) {
-            logger.info(String.format("Registering to existing topic '%s'", topic));
-        } else {
-            logger.info(String.format("Creating topic '%s'", topic));
-            CSBTopicCreator.createTopicSync(zkConnectionString, topic, 1, 1);
-        }
-    }
-
     public void start() {
         if (activated) {
             throw new IllegalAccessError("Start can be called only once");
@@ -103,6 +82,27 @@ public class CSBConsumer implements AutoCloseable {
         }).start();
     }
 
+    private void subscribeConsumerIfNeeded(String topic) {
+        Set<String> topics = consumer.subscription();
+        if (topics.contains(topic)) {
+            logger.info(String.format("The consumer is already subscribed to topic '%s'", topic));
+        } else {
+            Set<String> newTopics = new HashSet<>(topics);
+            newTopics.add(topic);
+            logger.info(String.format("Adding new topic '%s' to the consumer", topic));
+            consumer.subscribe(newTopics);
+        }
+    }
+
+    private void createIfTopicMissing(String topic) {
+        if (isTopicExists(topic)) {
+            logger.info(String.format("Registering to existing topic '%s'", topic));
+        } else {
+            logger.info(String.format("Creating topic '%s'", topic));
+            CSBTopicCreator.createTopicSync(zkConnectionString, topic, 1, 1);
+        }
+    }
+    
     private void handleMessage(String topic, String data) {
         List<MessageHandler> handlers = topicToHandlers.get(topic);
         if (handlers == null) {
