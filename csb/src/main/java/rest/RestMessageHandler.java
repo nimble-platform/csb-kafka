@@ -26,7 +26,7 @@ public class RestMessageHandler implements MessageHandler {
             URL url = new URL(handlerUrl + URLEncoder.encode(message, "UTF-8"));
             HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
             httpCon.setDoOutput(true);
-            httpCon.setRequestMethod("PUT");
+            httpCon.setRequestMethod("POST");
             OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
             out.write("Resource content");
             out.close();
