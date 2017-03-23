@@ -21,13 +21,13 @@ public class RestCSB implements AutoCloseable {
     //    TODO: add mapping for clients
 
     public void start() {
-        post("/consumer/register/:topic", (request, response) -> {
+        post("/consumer/subscribe/:topic", (request, response) -> {
             String topic = request.params().get(":topic");
             String handlerUrl = request.queryParams("handler");
             return registerToTopic(topic, handlerUrl);
         });
 
-        post("/consumer/register", (request, response) -> {
+        post("/consumer/subscribe", (request, response) -> {
             String topic = request.queryParams("topic");
             String handlerUrl = request.queryParams("handler");
 
@@ -70,11 +70,11 @@ public class RestCSB implements AutoCloseable {
 
     private String registerToTopic(String topic, String handlerUrl) {
         try {
-            consumer.register(topic, new RestMessageHandler(handlerUrl));
+            consumer.subscribe(topic, new RestMessageHandler(handlerUrl));
             return String.format("Successfully Registered to topic '%s'", topic);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Failed to register to topic";
+            return "Failed to subscribe to topic";
         }
     }
 

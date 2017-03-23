@@ -20,16 +20,18 @@ public class CSBTest {
     private static CSBProducer producer;
     private static CSBConsumer consumer;
 
-    private static String TEST_TOPIC = "test_topic_";
+    private static String TEST_TOPIC_PREFIX = "test_topic_";
+    private static String TEST_MESSAGE_PREFIX = "test_message_";
+    private static Random randomGenerator;
 
     @Ignore
     @Test
     public void testReceiveOneMessage() throws Exception {
         String testMessage = "This is a test message " + new Random().nextInt();
         MessageCounter mc = new MessageCounter(testMessage);
-        producer.sendMsgNoWait(TEST_TOPIC, testMessage);
+        producer.sendMsgNoWait(TEST_TOPIC_PREFIX, testMessage);
 
-        consumer.register(TEST_TOPIC, mc);
+        consumer.subscribe(TEST_TOPIC_PREFIX, mc);
         consumer.start();
 
         awaitEqualsOrReturn(mc, 1);
@@ -46,19 +48,17 @@ public class CSBTest {
     @Ignore
     @Test
     public void testTwoConsumersReceiveSameMessage() throws Exception {
-
         CSBConsumer consumer1 = new CSBConsumer("GROUP_1");
         CSBConsumer consumer2 = new CSBConsumer("GROUP_2");
 
-        Random r = new Random();
-        String randomNumber = String.valueOf(r.nextInt());
-        String RANDOM_TOPIC = TEST_TOPIC + randomNumber;
+        String randomNumber = String.valueOf(randomGenerator.nextInt());
+        String RANDOM_TOPIC = TEST_TOPIC_PREFIX + randomNumber;
         producer.sendMsgNoWait(RANDOM_TOPIC, randomNumber);
 
         MessageCounter messageCounter = new MessageCounter(randomNumber);
 
-        consumer1.register(RANDOM_TOPIC, messageCounter);
-        consumer2.register(RANDOM_TOPIC, messageCounter);
+        consumer1.subscribe(RANDOM_TOPIC, messageCounter);
+        consumer2.subscribe(RANDOM_TOPIC, messageCounter);
         consumer1.start();
         consumer2.start();
 
@@ -68,6 +68,7 @@ public class CSBTest {
         consumer1.close();
         consumer2.close();
     }
+
 
     private void awaitEqualsOrReturn(MessageCounter mc, int expectedCount) throws InterruptedException {
         int waited = 0;
@@ -94,8 +95,9 @@ public class CSBTest {
 
     @BeforeClass
     public static void setUp() {
-        TEST_TOPIC = "test_topic_" + (new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date()));
+        TEST_TOPIC_PREFIX = "test_topic_" + (new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date()));
         producer = new CSBProducer();
+        randomGenerator = new Random();
         consumer = new CSBConsumer(UUID.randomUUID().toString());
     }
 

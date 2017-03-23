@@ -36,7 +36,7 @@ public class CSBConsumer implements AutoCloseable {
         zkConnectionString = prop.getProperty("zookeeper.connection.string");
     }
 
-    public void register(String topic, MessageHandler messageHandler) {
+    public void subscribe(String topic, MessageHandler messageHandler) {
         if (messageHandler == null) {
             logger.error("Can't add a null message handler");
             return;
@@ -56,12 +56,7 @@ public class CSBConsumer implements AutoCloseable {
     }
 
     public void start() {
-        if (activated) {
-            throw new IllegalAccessError("Start can be called only once");
-        }
-        if (closed) {
-            throw new IllegalAccessError("Can't call start after the consumer was closed");
-        }
+        validateCanBeCalled();
         activated = true;
 
         new Thread(() -> {
@@ -82,6 +77,21 @@ public class CSBConsumer implements AutoCloseable {
         }).start();
     }
 
+    private void validateCanBeCalled() {
+        if (activated) {
+            throw new IllegalAccessError("Start can be called only once");
+        }
+        if (closed) {
+            throw new IllegalAccessError("Can't call start after the consumer was closed");
+        }
+    }
+
+    public Set<String> getSubscribedTopics() {
+        synchronized (consumerSync) {
+            return consumer.subscription();
+        }
+    }
+    
     private void subscribeConsumerIfNeeded(String topic) {
         Set<String> topics = consumer.subscription();
         if (topics.contains(topic)) {
@@ -126,11 +136,11 @@ public class CSBConsumer implements AutoCloseable {
     }
 
     private void waitUntilRegistered() {
-        boolean handlersEmpty = true;
-        while (handlersEmpty) {
+        boolean subscriptionsAreEmpty = true;
+        while (subscriptionsAreEmpty) {
             sleep(DEFAULT_SLEEP_MS);
-            synchronized (handlersSync) {
-                handlersEmpty = topicToHandlers.isEmpty();
+            synchronized (consumerSync) {
+                subscriptionsAreEmpty = consumer.subscription().isEmpty();
             }
         }
     }

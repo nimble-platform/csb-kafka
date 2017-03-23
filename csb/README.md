@@ -17,7 +17,7 @@ By sending a post command with one of the following formats
 * [server_ip:server_port]/consumer/register?topic=[topic_name]&handler=[handler_url]
 * [server_ip:server_port]/consumer/register/[topic_name]?handler=[handler_url]
 
-For example `http://127.0.0.1:4567/consumer/register/rest_topic?handler=http://127.0.0.1:9191/handler/rest_topic/`
+For example `http://127.0.0.1:4567/consumer/subscribe/rest_topic?handler=http://127.0.0.1:9191/handler/rest_topic/`
 
 #### Sending data to a specific topic
 By sending a post command with one of the following formats
