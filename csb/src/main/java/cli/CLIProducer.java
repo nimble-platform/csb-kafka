@@ -1,17 +1,46 @@
 package cli;
 
+import com.csb.CSBProducer;
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.Namespace;
+import org.apache.log4j.Logger;
+import org.apache.log4j.varia.NullAppender;
+
 /**
  * Created by evgeniyh on 19/03/17.
  */
 public class CLIProducer {
-    private static String usageMessage = "Wrong command format: use \nsend --topic 'my_topic' --message 'my_message'";
-
     public static void main(String[] args) {
-        if (args.length < 5) {
-            System.out.println(usageMessage);
+        Logger.getRootLogger().addAppender(new NullAppender());
+        Namespace namespace = parseArgs(args);
+        if (namespace == null) {
+            return;
         }
-        if (!(args[2].equals("send") && args[3].equals("--topic") && args[5].equals("--message"))) {
-            System.out.println(usageMessage);
+
+        String topic = namespace.getString("topic_name");
+        String message = namespace.getString("message");
+
+        CSBProducer producer = new CSBProducer();
+        System.out.println(String.format("Trying to send '%s' to topic '%s'", message, topic));
+        if (producer.sendMsgNoWait(topic, message)) {
+            System.out.println("Data was sent successfully");
+        } else {
+            System.out.println("Failed to send data");
+        }
+    }
+
+    private static Namespace parseArgs(String[] args) {
+        ArgumentParser parser = ArgumentParsers.newArgumentParser("CLI Producer").description("Will send data to topic");
+        parser.addArgument("topic_name").help("The name of the target topic");
+        parser.addArgument("message").help("The data to be send");
+
+        try {
+            return parser.parseArgs(args);
+        } catch (ArgumentParserException ex) {
+            parser.handleError(ex);
+            return null;
         }
     }
 }
