@@ -85,7 +85,7 @@ public class CSBTest {
     private void sendRandomMessages(int count, String topic) {
         for (int i = 0; i < count; i++) {
             try {
-                producer.sendMsg(topic, "test_message" + new Random().nextInt(), false);
+                producer.sendMsgInBulk(topic, "test_message" + new Random().nextInt());
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.fail("Exception " + e.getMessage());

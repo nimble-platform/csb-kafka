@@ -19,8 +19,8 @@ public class CSBProducer implements AutoCloseable {
         producer = new KafkaProducer<>(props);
     }
 
-    public void sendMsg(String topic, String msg, boolean immediate) throws Exception {
-        logger.info(String.format("Sending message '%s' to topic '%s'", msg, topic));
+    private boolean sendMsg(String topic, String msg, boolean immediate) {
+        logger.info(String.format("Trying to send message '%s' to topic '%s'", msg, topic));
         try {
             Future<RecordMetadata> data = producer.send(new ProducerRecord<>(topic, msg));
             if (!immediate) {
@@ -29,15 +29,19 @@ public class CSBProducer implements AutoCloseable {
                 RecordMetadata metadata = data.get();
                 logger.info("Sending message completed - " + metadata.toString());
             }
+            return true;
         } catch (Exception e) {
             logger.error(String.format("Exception '%s' on sending message '%s' to topic '%s'", e.getMessage(), msg, topic));
-            throw e;
+            return false;
         }
     }
 
-    public void sendMsgNoWait(String topic, String msg) throws Exception {
-        sendMsg(topic, msg, true);
-        producer.flush();
+    public boolean sendMsgInBulk(String topic, String msg) {
+        return sendMsg(topic, msg, false);
+    }
+
+    public boolean sendMsgNoWait(String topic, String msg) {
+        return sendMsg(topic, msg, true);
     }
 
     @Override

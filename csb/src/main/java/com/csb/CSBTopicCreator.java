@@ -5,10 +5,13 @@ import kafka.utils.ZKStringSerializer$;
 import kafka.utils.ZkUtils;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
+import org.apache.log4j.Logger;
 
 import java.util.Properties;
 
 public class CSBTopicCreator {
+    private final static Logger logger = Logger.getLogger(CSBTopicCreator.class);
+
     private final static Object completeSync = new Object();
     final private int sessionTimeoutMs;
     final private int connectionTimeout;
@@ -34,7 +37,7 @@ public class CSBTopicCreator {
 
         try {
             if (AdminUtils.topicExists(zkUtils, topicName)) {
-                System.out.println(String.format("Topic by the name '%s' already exists - will not create a new", topicName));
+                logger.info(String.format("Topic by the name '%s' already exists - will not create a new", topicName));
                 return false;
             }
 
@@ -43,11 +46,10 @@ public class CSBTopicCreator {
             synchronized (completeSync) {
                 completeSync.wait();
             }
-            System.out.println("Topic created");
+            logger.info("Topic created");
             return true;
         } catch (Exception e) {
-            System.out.println(String.format("Exception on creating topic '%s' '%s'", topicName, e.getMessage()));
-            e.printStackTrace();
+            logger.error(String.format("Exception on creating topic '%s' ", topicName), e);
             return false;
         } finally {
             zkUtils.close();

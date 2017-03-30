@@ -22,7 +22,11 @@ public class CLICreator {
         CSBTopicCreator topicCreator = new CSBTopicCreator();
 
         System.out.println(String.format("Trying to create topic named '%s'", topicName));
-        topicCreator.createTopicSync(topicName);
+        if (topicCreator.createTopicSync(topicName)) {
+            System.out.println("Topic was created successfully");
+        } else {
+            System.out.println("Couldn't create the topic");
+        }
     }
 
     private static Namespace parseArgs(String[] args) {
