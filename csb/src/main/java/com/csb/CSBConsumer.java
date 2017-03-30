@@ -23,7 +23,7 @@ public class CSBConsumer implements AutoCloseable {
     private final int DEFAULT_SLEEP_MS = 100;
     private final HashMap<String, List<MessageHandler>> topicToHandlers = new HashMap<>();
     private final KafkaConsumer<String, String> consumer;
-    private final String zkConnectionString;
+    private final CSBTopicCreator topicCreator;
 
     private boolean activated;
     private boolean closed;
@@ -32,14 +32,15 @@ public class CSBConsumer implements AutoCloseable {
         Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.CONSUMER_DEV);
         prop.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         consumer = new KafkaConsumer<>(prop);
-
-        zkConnectionString = prop.getProperty("zookeeper.connection.string");
+        topicCreator = new CSBTopicCreator();
     }
 
     public void subscribe(String topic, MessageHandler messageHandler) {
         if (messageHandler == null) {
-            logger.error("Can't add a null message handler");
-            return;
+            throw new NullPointerException("Can't add a null message handler");
+        }
+        if (topic == null || topic.isEmpty()) {
+            throw new NullPointerException("Topic can't be null or empty");
         }
 
         logger.info(String.format("Registering message handler of type %s for topic %s", messageHandler.getClass(), topic));
@@ -91,7 +92,7 @@ public class CSBConsumer implements AutoCloseable {
             return consumer.subscription();
         }
     }
-    
+
     private void subscribeConsumerIfNeeded(String topic) {
         Set<String> topics = consumer.subscription();
         if (topics.contains(topic)) {
@@ -108,11 +109,15 @@ public class CSBConsumer implements AutoCloseable {
         if (isTopicExists(topic)) {
             logger.info(String.format("Registering to existing topic '%s'", topic));
         } else {
-            logger.info(String.format("Creating topic '%s'", topic));
-            CSBTopicCreator.createTopicSync(zkConnectionString, topic, 1, 1);
+            logger.info(String.format("Trying to create topic '%s'", topic));
+            if (!topicCreator.createTopicSync(topic)) {
+                logger.error(String.format("Unable to create topic '%s'", topic));
+            } else {
+                logger.info(String.format("Topic '%s' was created successfully", topic));
+            }
         }
     }
-    
+
     private void handleMessage(String topic, String data) {
         List<MessageHandler> handlers = topicToHandlers.get(topic);
         if (handlers == null) {

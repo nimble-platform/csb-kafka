@@ -14,6 +14,7 @@ public class PropertiesLoader {
 
     public static String CONSUMER_DEV = "consumer_dev.properties";
     public static String PRODUCER_DEV = "producer_dev.properties";
+    public static String TOPIC_CREATOR_DEV = "creator_dev.properties";
 
     public static Properties loadProperties(String file) {
         InputStream inputStream = PropertiesLoader.class.getClassLoader().getResourceAsStream(file);
@@ -27,12 +28,12 @@ public class PropertiesLoader {
             return prop;
         } catch (Exception ex) {
             logger.info(String.format("Exception '%s' on loading properties file '%s'", ex.getMessage(), file));
-            return null;
+            throw new RuntimeException("Unable to load properties");
         } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
         }
