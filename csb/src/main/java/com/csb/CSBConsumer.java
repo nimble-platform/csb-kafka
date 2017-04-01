@@ -87,6 +87,12 @@ public class CSBConsumer implements AutoCloseable {
         }
     }
 
+    public Set<String> getAvailableTopics() {
+        synchronized (consumerSync) {
+            return consumer.listTopics().keySet();
+        }
+    }
+
     public Set<String> getSubscribedTopics() {
         synchronized (consumerSync) {
             return consumer.subscription();
