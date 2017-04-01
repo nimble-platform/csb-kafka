@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.varia.NullAppender;
 
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Created by evgeniyh on 19/03/17.
@@ -28,24 +29,29 @@ public class CLIConsumer {
         System.out.println(String.format("Consumer has started with group id '%s'", groupId));
 
         Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String[] commandArgs = scanner.nextLine().split(" ");
-            Namespace namespace = parseArgs(commandArgs);
-            if (namespace == null) {
-                continue;
+        try {
+            while (true) {
+                String[] commandArgs = scanner.nextLine().split(" ");
+                Namespace namespace = parseArgs(commandArgs);
+                if (namespace == null) {
+                    continue;
+                }
+                String command = namespace.getString("command");
+                switch (command) {
+                    case "list":
+                        handleListCommand(namespace);
+                        break;
+                    case "subscribe":
+                        handleSubscribeCommand(consumer, namespace);
+                        break;
+                    default:
+                        System.out.println("Command isn't supported");
+                        break;
+                }
             }
-            String command = namespace.getString("command");
-            switch (command) {
-                case "list":
-                    handleListCommand(namespace);
-                    break;
-                case "subscribe":
-                    handleSubscribeCommand(consumer, namespace);
-                    break;
-                default:
-                    System.out.println("Command isn't supported");
-                    break;
-            }
+        } catch (Exception ignored) {
+            System.out.println();
+            System.out.println("Exiting");
         }
     }
 
@@ -57,22 +63,31 @@ public class CLIConsumer {
 
     private static void handleListCommand(Namespace namespace) {
         String whichTopics = namespace.getString("which_topics");
+        Set<String> topics;
         switch (whichTopics) {
             case "consumer":
-                System.out.println("Printing consumer subscribed topics:");
-                System.out.println("------------------------------------");
-                for (String topic : consumer.getSubscribedTopics()) {
-                    System.out.println(topic);
+                topics = consumer.getSubscribedTopics();
+                if (topics.isEmpty()) {
+                    System.out.println("The consumer isn't registered to any topic");
+                } else {
+                    System.out.println("Printing consumer subscribed topics:");
+                    System.out.println("------------------------------------");
+                    topics.forEach(System.out::println);
                 }
                 break;
             case "all":
-                System.out.println("Printing all topics available:");
-                System.out.println("------------------------------");
-                consumer.getAvailableTopics().forEach(t -> {
-                    if (!t.startsWith("__")) {
-                        System.out.println(t);
-                    }
-                });
+                topics = consumer.getAvailableTopics();
+                if (topics.size() == 1) {
+                    System.out.println("There are no available topics");
+                } else {
+                    System.out.println("Printing all topics available:");
+                    System.out.println("------------------------------");
+                    topics.forEach(t -> {
+                        if (!t.startsWith("__")) {
+                            System.out.println(t);
+                        }
+                    });
+                }
                 break;
             default:
                 System.out.println("Not supported topics list");
