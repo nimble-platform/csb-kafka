@@ -1,0 +1,7 @@
+---
+applications:
+ - name: csb_service
+   random-route: true
+   path: target/csb_service.war
+   memory: 512M
+   instances: 1
