@@ -25,6 +25,22 @@ public class CSBTest {
     private static String TEST_MESSAGE_PREFIX = "test_message_";
     private static Random randomGenerator;
 
+    @BeforeClass
+    public static void setUp() {
+        TEST_TOPIC_PREFIX = "test_topic_" + (new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date()));
+        producer = new CSBProducer(Environment.DEVELOPMENT);
+        randomGenerator = new Random();
+        consumer = new CSBConsumer(Environment.DEVELOPMENT, UUID.randomUUID().toString());
+    }
+
+    @AfterClass
+    public static void cleanUp() {
+        producer.close();
+        if (consumer.isStarted()) {
+            consumer.close();
+        }
+    }
+
     @Ignore
     @Test
     public void testReceiveOneMessage() throws Exception {
@@ -70,7 +86,6 @@ public class CSBTest {
         consumer2.close();
     }
 
-
     private void awaitEqualsOrReturn(MessageCounter mc, int expectedCount) throws InterruptedException {
         int waited = 0;
         while (waited < MAX_TIMEOUT) {
@@ -91,22 +106,6 @@ public class CSBTest {
                 e.printStackTrace();
                 Assert.fail("Exception " + e.getMessage());
             }
-        }
-    }
-
-    @BeforeClass
-    public static void setUp() {
-        TEST_TOPIC_PREFIX = "test_topic_" + (new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date()));
-        producer = new CSBProducer(Environment.DEVELOPMENT);
-        randomGenerator = new Random();
-        consumer = new CSBConsumer(Environment.DEVELOPMENT, UUID.randomUUID().toString());
-    }
-
-    @AfterClass
-    public static void cleanUp() {
-        producer.close();
-        if (consumer.isActivated()) {
-            consumer.close();
         }
     }
 

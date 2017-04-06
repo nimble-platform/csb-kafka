@@ -27,7 +27,7 @@ public class CSBConsumer implements AutoCloseable {
     private final KafkaConsumer<String, String> consumer;
     private final CSBTopicCreator topicCreator;
 
-    private boolean activated;
+    private boolean started;
     private boolean closed;
 
     public CSBConsumer(Environment environment, String groupId) {
@@ -60,7 +60,7 @@ public class CSBConsumer implements AutoCloseable {
 
     public void start() {
         validateCanBeCalled();
-        activated = true;
+        started = true;
 
         new Thread(() -> {
             waitUntilRegistered();
@@ -81,7 +81,7 @@ public class CSBConsumer implements AutoCloseable {
     }
 
     private void validateCanBeCalled() {
-        if (activated) {
+        if (started) {
             throw new IllegalAccessError("Start can be called only once");
         }
         if (closed) {
@@ -163,13 +163,13 @@ public class CSBConsumer implements AutoCloseable {
         return serverTopics.containsKey(topic);
     }
 
-    public boolean isActivated() {
-        return activated;
+    public boolean isStarted() {
+        return started;
     }
 
     @Override
     public void close() {
-        if (!activated) {
+        if (!started) {
             throw new IllegalAccessError("Can't close without calling start");
         }
         closed = true;
