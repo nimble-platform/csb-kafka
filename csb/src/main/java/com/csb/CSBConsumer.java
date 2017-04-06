@@ -1,5 +1,7 @@
 package com.csb;
 
+import common.Environment;
+import common.PropertiesLoader;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -28,11 +30,11 @@ public class CSBConsumer implements AutoCloseable {
     private boolean activated;
     private boolean closed;
 
-    public CSBConsumer(String groupId) {
-        Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.CONSUMER_DEV);
+    public CSBConsumer(Environment environment, String groupId) {
+        Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.CONSUMER, environment);
         prop.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         consumer = new KafkaConsumer<>(prop);
-        topicCreator = new CSBTopicCreator();
+        topicCreator = new CSBTopicCreator(Environment.PRODUCTION);
     }
 
     public void subscribe(String topic, MessageHandler messageHandler) {

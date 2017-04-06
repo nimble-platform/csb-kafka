@@ -1,5 +1,6 @@
 package com.csb;
 
+import common.Environment;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -41,15 +42,15 @@ public class CSBTest {
     @Ignore
     @Test(expected = IllegalAccessError.class)
     public void failOnStartingWithoutRegistering() throws Exception {
-        CSBConsumer consumer2 = new CSBConsumer("TEST_GROUP");
+        CSBConsumer consumer2 = new CSBConsumer(Environment.DEVELOPMENT, "TEST_GROUP");
         consumer2.start();
     }
 
     @Ignore
     @Test
     public void testTwoConsumersReceiveSameMessage() throws Exception {
-        CSBConsumer consumer1 = new CSBConsumer("GROUP_1");
-        CSBConsumer consumer2 = new CSBConsumer("GROUP_2");
+        CSBConsumer consumer1 = new CSBConsumer(Environment.DEVELOPMENT, "GROUP_1");
+        CSBConsumer consumer2 = new CSBConsumer(Environment.DEVELOPMENT, "GROUP_2");
 
         String randomNumber = String.valueOf(randomGenerator.nextInt());
         String RANDOM_TOPIC = TEST_TOPIC_PREFIX + randomNumber;
@@ -96,9 +97,9 @@ public class CSBTest {
     @BeforeClass
     public static void setUp() {
         TEST_TOPIC_PREFIX = "test_topic_" + (new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date()));
-        producer = new CSBProducer();
+        producer = new CSBProducer(Environment.DEVELOPMENT);
         randomGenerator = new Random();
-        consumer = new CSBConsumer(UUID.randomUUID().toString());
+        consumer = new CSBConsumer(Environment.DEVELOPMENT, UUID.randomUUID().toString());
     }
 
     @AfterClass

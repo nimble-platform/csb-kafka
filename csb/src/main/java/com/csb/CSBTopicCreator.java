@@ -1,5 +1,7 @@
 package com.csb;
 
+import common.Environment;
+import common.PropertiesLoader;
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;
 import kafka.utils.ZkUtils;
@@ -20,8 +22,8 @@ public class CSBTopicCreator {
 
     final private String connectionString;
 
-    public CSBTopicCreator() {
-        Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.TOPIC_CREATOR_DEV);
+    public CSBTopicCreator(Environment environment) {
+        Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.TOPIC_CREATOR, environment);
 
         sessionTimeoutMs = Integer.parseInt(prop.getProperty("session.timeout.ms"));
         connectionTimeout = Integer.parseInt(prop.getProperty("connection.timeout.ms"));

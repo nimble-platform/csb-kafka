@@ -1,6 +1,7 @@
 package cli;
 
 import com.csb.CSBProducer;
+import common.Environment;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -22,7 +23,7 @@ public class CLIProducer {
         String topic = namespace.getString("topic_name");
         String message = namespace.getString("message");
 
-        CSBProducer producer = new CSBProducer();
+        CSBProducer producer = new CSBProducer(Environment.PRODUCTION);
         System.out.println(String.format("Trying to send '%s' to topic '%s'", message, topic));
         if (producer.sendMsgNoWait(topic, message)) {
             System.out.println("Data was sent successfully");

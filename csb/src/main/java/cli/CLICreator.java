@@ -1,6 +1,7 @@
 package cli;
 
 import com.csb.CSBTopicCreator;
+import common.Environment;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -19,7 +20,7 @@ public class CLICreator {
             return;
         }
         String topicName = namespace.get("topic_name");
-        CSBTopicCreator topicCreator = new CSBTopicCreator();
+        CSBTopicCreator topicCreator = new CSBTopicCreator(Environment.PRODUCTION);
 
         System.out.println(String.format("Trying to create topic named '%s'", topicName));
         if (topicCreator.createTopicSync(topicName)) {

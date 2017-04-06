@@ -2,6 +2,7 @@ package rest;
 
 import com.csb.CSBConsumer;
 import com.csb.CSBProducer;
+import common.Environment;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class RestCSB implements AutoCloseable {
     private final CSBConsumer consumer;
 
     public RestCSB() {
-        consumer = new CSBConsumer("rest_consumer_1");
+        consumer = new CSBConsumer(Environment.PRODUCTION, "rest_consumer_1");
         consumer.start();
     }
 
@@ -59,7 +60,7 @@ public class RestCSB implements AutoCloseable {
 
     //    TODO: fix issue when using the same producer
     private String sendMessage(String topic, String message) {
-        try (CSBProducer producer = new CSBProducer()) {
+        try (CSBProducer producer = new CSBProducer(Environment.DEVELOPMENT)) {
             producer.sendMsgNoWait(topic, message);
             return "Message was sent successfully";
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.csb;
+package common;
 
 import org.apache.log4j.Logger;
 
@@ -10,13 +10,14 @@ import java.util.Properties;
  * Created by evgeniyh on 09/03/17.
  */
 public class PropertiesLoader {
-    final private static Logger logger = Logger.getLogger("basic");
+    final private static Logger logger = Logger.getLogger(PropertiesLoader.class);
 
-    public static String CONSUMER_DEV = "consumer_dev.properties";
-    public static String PRODUCER_DEV = "producer_dev.properties";
-    public static String TOPIC_CREATOR_DEV = "creator_dev.properties";
+    public static String CONSUMER = "consumer";
+    public static String PRODUCER = "producer";
+    public static String TOPIC_CREATOR = "creator";
 
-    public static Properties loadProperties(String file) {
+    public static Properties loadProperties(String clientType, Environment environment) {
+        String file = String.format("%s_%s.properties", clientType, environment);
         InputStream inputStream = PropertiesLoader.class.getClassLoader().getResourceAsStream(file);
         try {
             if (inputStream == null) {

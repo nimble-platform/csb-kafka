@@ -1,6 +1,7 @@
 package cli;
 
 import com.csb.CSBConsumer;
+import common.Environment;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -24,7 +25,7 @@ public class CLIConsumer {
         String groupId = (args.length > 0 && args[0] != null) ? args[0] : "cli_consumer";
         Logger.getRootLogger().addAppender(new NullAppender());
 
-        consumer = new CSBConsumer(groupId);
+        consumer = new CSBConsumer(Environment.PRODUCTION, groupId);
         consumer.start();
         System.out.println(String.format("Consumer has started with group id '%s'", groupId));
 

@@ -1,5 +1,7 @@
 package com.csb;
 
+import common.Environment;
+import common.PropertiesLoader;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,8 +16,8 @@ public class CSBProducer implements AutoCloseable {
 
     private Producer<String, String> producer = null;
 
-    public CSBProducer() {
-        Properties props = PropertiesLoader.loadProperties(PropertiesLoader.PRODUCER_DEV);
+    public CSBProducer(Environment environment) {
+        Properties props = PropertiesLoader.loadProperties(PropertiesLoader.PRODUCER, environment);
         producer = new KafkaProducer<>(props);
     }
 
