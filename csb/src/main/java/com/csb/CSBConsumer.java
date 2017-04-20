@@ -6,14 +6,12 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.PartitionInfo;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -159,8 +157,7 @@ public class CSBConsumer implements AutoCloseable {
     }
 
     private boolean isTopicExists(String topic) {
-        Map<String, List<PartitionInfo>> serverTopics = consumer.listTopics();
-        return serverTopics.containsKey(topic);
+        return topicToHandlers.containsKey(topic) || consumer.listTopics().containsKey(topic);
     }
 
     public boolean isStarted() {
