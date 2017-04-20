@@ -1,0 +1,19 @@
+<!--<server>-->
+<!--<listener>-->
+<!--<listener-class>-->
+<!--rest.ServerEventHandler-->
+<!--</listener-class>-->
+<!--</listener>-->
+
+<!--<featureManager>-->
+<!--<feature>webProfile-7.0</feature>-->
+<!--</featureManager>-->
+
+<!--<httpEndpoint id="defaultHttpEndpoint"-->
+<!--host="*"-->
+<!--httpPort="9080">-->
+<!--<tcpOptions soReuseAddr="true"/>-->
+<!--</httpEndpoint>-->
+
+<!--<application name="csb_service" context-root="/csb_service" location="${appLocation}" type="war"/>-->
+<!--</server>-->
