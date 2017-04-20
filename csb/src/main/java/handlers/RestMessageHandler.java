@@ -1,6 +1,4 @@
-package rest;
-
-import com.csb.MessageHandler;
+package handlers;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -23,6 +21,7 @@ public class RestMessageHandler implements MessageHandler {
     @Override
     public void handle(String message) {
         try {
+            System.out.println(String.format("Sending message '%s' to url '%s'", message, handlerUrl));
             URL url = new URL(handlerUrl + URLEncoder.encode(message, "UTF-8"));
             HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
             httpCon.setDoOutput(true);
@@ -32,8 +31,6 @@ public class RestMessageHandler implements MessageHandler {
             out.close();
             InputStream stream = httpCon.getInputStream();
             BufferedReader buf = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }

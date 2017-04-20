@@ -1,4 +1,4 @@
-package com.csb;
+package handlers;
 
 /**
  * Created by evgeniyh on 12/03/17.
