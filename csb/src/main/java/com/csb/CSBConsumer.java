@@ -2,11 +2,13 @@ package com.csb;
 
 import common.Environment;
 import common.PropertiesLoader;
+import handlers.MessageHandler;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.log4j.Logger;
+import rest.RESTAdmin;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -111,16 +113,22 @@ public class CSBConsumer implements AutoCloseable {
         }
     }
 
+    //    TODO maybe bug - switch to REST-ADMIN
     private void createIfTopicMissing(String topic) {
         if (isTopicExists(topic)) {
             logger.info(String.format("Registering to existing topic '%s'", topic));
         } else {
-            logger.info(String.format("Trying to create topic '%s'", topic));
-            if (!topicCreator.createTopicSync(topic)) {
-                logger.error(String.format("Unable to create topic '%s'", topic));
-            } else {
-                logger.info(String.format("Topic '%s' was created successfully", topic));
+            try {
+                RESTAdmin.createTopic("https://kafka-admin-prod02.messagehub.services.eu-gb.bluemix.net:443", "uVQSsww0VrYOLO7RxUqrsQBpPtk8FOfp22L537rp4D7AHKhV", topic);
+            } catch (Exception e) {
+                logger.error("Error on creating topic " + topic, e);
             }
+//            logger.info(String.format("Trying to create topic '%s'", topic));
+//            if (!topicCreator.createTopicSync(topic)) {
+//                logger.error(String.format("Unable to create topic '%s'", topic));
+//            } else {
+//                logger.info(String.format("Topic '%s' was created successfully", topic));
+//            }
         }
     }
 

@@ -26,10 +26,10 @@ public class CSBProducer implements AutoCloseable {
         try {
             Future<RecordMetadata> data = producer.send(new ProducerRecord<>(topic, msg));
             if (!immediate) {
-                logger.info("Sending message completed");
+                logger.info("Putting message in async send - completed");
             } else {
                 RecordMetadata metadata = data.get();
-                logger.info("Sending message completed - " + metadata.toString());
+                logger.info("Message was sent on - " + String.valueOf(metadata.checksum()));
             }
             return true;
         } catch (Exception e) {
