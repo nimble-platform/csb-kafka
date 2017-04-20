@@ -1,17 +1,20 @@
 package rest;
 
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
+
 /**
  * Created by evgeniyh on 16/03/17.
  */
-public class MainRest {
-    public static void main(String[] args) {
-        try {
-            RestCSB csb = new RestCSB();
-            csb.start();
-            System.out.println("Server started");
-        } catch (Exception ex) {
-            System.out.print(ex.getMessage());
-            ex.printStackTrace();
-        }
+@ApplicationPath("/")
+@Path("/")
+public class MainRest extends Application {
+
+    @GET
+    @Path("/")
+    public String hello() {
+        return "Hello from CSB-Service";
     }
 }
