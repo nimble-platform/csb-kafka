@@ -1,6 +1,7 @@
 package com.csb;
 
 import common.Environment;
+import handlers.MessageHandler;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
