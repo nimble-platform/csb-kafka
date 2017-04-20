@@ -1,17 +1,21 @@
 package rest;
 
 import com.csb.CSBConsumer;
-import com.csb.MessageHandler;
 import common.Environment;
+import handlers.IgnoredMessageHandler;
+import handlers.MessageHandler;
+import handlers.RestMessageHandler;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 
 /**
@@ -53,13 +57,21 @@ public class RestConsumer extends Application {
         return jsonObject.toString();
     }
 
+    //TODO: make logging of only debug to turn off
+    //    TODO: make the topic creating inside csb consumer
     @POST
-    @Path("/subscribe/{topic}/{handler_url}")
+    @Path("/subscribe/{topic}")
     public String subscribeToTopic(@PathParam("topic") String topic,
-                                   @PathParam("handler_url") String handlerUrl) {
+                                   @QueryParam("handler") String handlerUrl,
+                                   @DefaultValue("rest") @QueryParam("type") String handlerType) {
         try {
+            MessageHandler mh;
+            if (handlerType.equals("ignore")) {
+                mh = new IgnoredMessageHandler(true);
+            } else {
+                mh = new RestMessageHandler(handlerUrl);
+            }
             logger.info(String.format("Subscribing the consumer to topic '%s' and handler url '%s'", topic, handlerUrl));
-            MessageHandler mh = new RestMessageHandler(handlerUrl);
             consumer.subscribe(topic, mh);
             logger.info(String.format("Successfully subscribed to topic '%s' with handler url '%s'", topic, handlerUrl));
             return "Successfully subscribed to topic";
