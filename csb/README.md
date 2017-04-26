@@ -22,7 +22,7 @@ Send a GET command on `[csb_url]/consumer/topics`
 #### To create a new topic
 Send a POST command on `[csb_url]/create/[topic_name]`
 
-#### To Registering a handler to a topic
+#### To register a handler to a topic
 Send a POST command on `[csb_url]/consumer/subscribe`
 With query parameters:
 * topic - The topic to subscribe to
