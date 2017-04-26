@@ -14,22 +14,24 @@ a POST command on `http://127.0.0.1:9191/handler/test_topic/test_data`
 #### REST CSB
 ---
 #### Checking the service and up
-Send a GET command on `[csb_url]/` Will return "Hello from CSB-Service"
+Send a GET command on `[csb_url]/`   
+Will return a "Hello from CSB-Service"
 
-#### To Get the list of the available topics 
-Send a GET command on `[csb_url]/consumer/topics`
+#### To Get the list of the available topics  
+Send a GET command on `[csb_url]/consumer/topics`  
 
 #### To create a new topic
-Send a POST command on `[csb_url]/create/[topic_name]`
+Send a POST command on `[csb_url]/create/[topic_name]`    
 
 #### To register a handler to a topic
-Send a POST command on `[csb_url]/consumer/subscribe`
-With query parameters:
-* topic - The topic to subscribe to
+Send a POST command on `[csb_url]/consumer/subscribe`  
+With query parameters:  
+* topic - The topic to subscribe to  
 * handler - The handler url (which will receive notifications)  
-e.g. `[csb_url]/consumer/subscribe?topic=test_topic&handler=127.0.0.1:9991/test_topic`  
+
+e.g. `[csb_url]/consumer/subscribe?topic=test_topic&handler=127.0.0.1:9991/test_topic`    
 
 #### To send data to a topic
-Send a POST command on `[csb_url]/send/{topic_name}`
+Send a POST command on `[csb_url]/send/{topic_name}`  
 With topic_name as path parameter and message as query parameter  
-e.g. `[csb_url]/producer/test_topic?message=my_test_message`
+e.g. `[csb_url]/producer/test_topic?message=my_test_message`  
