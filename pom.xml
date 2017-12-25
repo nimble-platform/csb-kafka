@@ -111,7 +111,7 @@
                     <artifactId>maven-war-plugin</artifactId>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
-                        <warName>csb_service</warName>
+                        <warName>csb-kafka</warName>
                     </configuration>
                 </plugin>
                 <plugin>
