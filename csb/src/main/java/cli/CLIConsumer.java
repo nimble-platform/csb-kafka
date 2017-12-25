@@ -25,7 +25,7 @@ public class CLIConsumer {
         String groupId = (args.length > 0 && args[0] != null) ? args[0] : "cli_consumer";
         Logger.getRootLogger().addAppender(new NullAppender());
 
-        consumer = new CSBConsumer(Environment.PRODUCTION, groupId);
+        consumer = new CSBConsumer(Environment.PRODUCTION, groupId, null);
         consumer.start();
         System.out.println(String.format("Consumer has started with group id '%s'", groupId));
 

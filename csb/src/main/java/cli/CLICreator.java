@@ -1,6 +1,6 @@
 package cli;
 
-import com.csb.CSBTopicCreator;
+import com.csb.topics.CSBZookeeperTopicsHandler;
 import common.Environment;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -20,7 +20,7 @@ public class CLICreator {
             return;
         }
         String topicName = namespace.get("topic_name");
-        CSBTopicCreator topicCreator = new CSBTopicCreator(Environment.PRODUCTION);
+        CSBZookeeperTopicsHandler topicCreator = new CSBZookeeperTopicsHandler(Environment.PRODUCTION);
 
         System.out.println(String.format("Trying to create topic named '%s'", topicName));
         if (topicCreator.createTopicSync(topicName)) {

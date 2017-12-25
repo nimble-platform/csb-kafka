@@ -1,4 +1,4 @@
-package com.csb;
+package com.csb.topics;
 
 import common.Environment;
 import common.PropertiesLoader;
@@ -11,8 +11,10 @@ import org.apache.log4j.Logger;
 
 import java.util.Properties;
 
-public class CSBTopicCreator {
-    private final static Logger logger = Logger.getLogger(CSBTopicCreator.class);
+//TODO: refactor to use rest admin
+//TODO: load the list of topics on start
+public class CSBZookeeperTopicsHandler {
+    private final static Logger logger = Logger.getLogger(CSBZookeeperTopicsHandler.class);
 
     private final static Object completeSync = new Object();
     final private int sessionTimeoutMs;
@@ -22,7 +24,7 @@ public class CSBTopicCreator {
 
     final private String connectionString;
 
-    public CSBTopicCreator(Environment environment) {
+    public CSBZookeeperTopicsHandler(Environment environment) {
         Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.TOPIC_CREATOR, environment);
 
         sessionTimeoutMs = Integer.parseInt(prop.getProperty("session.timeout.ms"));

@@ -1,5 +1,6 @@
 package com.csb;
 
+import com.csb.topics.CSBTopicsHandler;
 import common.Environment;
 import common.PropertiesLoader;
 import handlers.MessageHandler;
@@ -8,7 +9,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.log4j.Logger;
-import rest.RESTAdmin;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,16 +25,17 @@ public class CSBConsumer implements AutoCloseable {
     private final int DEFAULT_SLEEP_MS = 100;
     private final HashMap<String, List<MessageHandler>> topicToHandlers = new HashMap<>();
     private final KafkaConsumer<String, String> consumer;
-    private final CSBTopicCreator topicCreator;
+    private final CSBTopicsHandler topicsHandler;
 
     private boolean started;
     private boolean closed;
 
-    public CSBConsumer(Environment environment, String groupId) {
+    public CSBConsumer(Environment environment, String groupId, CSBTopicsHandler topicsHandler) {
+        this.topicsHandler = topicsHandler;
+
         Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.CONSUMER, environment);
         prop.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         consumer = new KafkaConsumer<>(prop);
-        topicCreator = new CSBTopicCreator(Environment.PRODUCTION);
     }
 
     public void subscribe(String topic, MessageHandler messageHandler) {
@@ -113,22 +114,17 @@ public class CSBConsumer implements AutoCloseable {
         }
     }
 
-    //    TODO maybe bug - switch to REST-ADMIN
     private void createIfTopicMissing(String topic) {
         if (isTopicExists(topic)) {
             logger.info(String.format("Registering to existing topic '%s'", topic));
         } else {
             try {
-                RESTAdmin.createTopic("https://kafka-admin-prod02.messagehub.services.eu-gb.bluemix.net:443", "uVQSsww0VrYOLO7RxUqrsQBpPtk8FOfp22L537rp4D7AHKhV", topic);
+                logger.info(String.format("Trying to create topic '%s'", topic));
+                topicsHandler.createTopicSync(topic);
+                logger.info(String.format("Topic '%s' was created successfully", topic));
             } catch (Exception e) {
                 logger.error("Error on creating topic " + topic, e);
             }
-//            logger.info(String.format("Trying to create topic '%s'", topic));
-//            if (!topicCreator.createTopicSync(topic)) {
-//                logger.error(String.format("Unable to create topic '%s'", topic));
-//            } else {
-//                logger.info(String.format("Topic '%s' was created successfully", topic));
-//            }
         }
     }
 
@@ -165,7 +161,7 @@ public class CSBConsumer implements AutoCloseable {
     }
 
     private boolean isTopicExists(String topic) {
-        return topicToHandlers.containsKey(topic) || consumer.listTopics().containsKey(topic);
+        return topicToHandlers.containsKey(topic) || topicsHandler.isTopicsExists(topic);
     }
 
     public boolean isStarted() {

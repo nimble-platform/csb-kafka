@@ -31,7 +31,7 @@ public class CSBTest {
         TEST_TOPIC_PREFIX = "test_topic_" + (new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date()));
         producer = new CSBProducer(Environment.DEVELOPMENT);
         randomGenerator = new Random();
-        consumer = new CSBConsumer(Environment.DEVELOPMENT, UUID.randomUUID().toString());
+        consumer = new CSBConsumer(Environment.DEVELOPMENT, UUID.randomUUID().toString(), null);
     }
 
     @AfterClass
@@ -59,15 +59,15 @@ public class CSBTest {
     @Ignore
     @Test(expected = IllegalAccessError.class)
     public void failOnStartingWithoutRegistering() throws Exception {
-        CSBConsumer consumer2 = new CSBConsumer(Environment.DEVELOPMENT, "TEST_GROUP");
+        CSBConsumer consumer2 = new CSBConsumer(Environment.DEVELOPMENT, "TEST_GROUP", null);
         consumer2.start();
     }
 
     @Ignore
     @Test
     public void testTwoConsumersReceiveSameMessage() throws Exception {
-        CSBConsumer consumer1 = new CSBConsumer(Environment.DEVELOPMENT, "GROUP_1");
-        CSBConsumer consumer2 = new CSBConsumer(Environment.DEVELOPMENT, "GROUP_2");
+        CSBConsumer consumer1 = new CSBConsumer(Environment.DEVELOPMENT, "GROUP_1", null);
+        CSBConsumer consumer2 = new CSBConsumer(Environment.DEVELOPMENT, "GROUP_2", null);
 
         String randomNumber = String.valueOf(randomGenerator.nextInt());
         String RANDOM_TOPIC = TEST_TOPIC_PREFIX + randomNumber;

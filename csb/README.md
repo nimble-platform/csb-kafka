@@ -13,7 +13,7 @@ a POST command on `http://127.0.0.1:9191/handler/test_topic/test_data`
 
 #### REST CSB
 ---
-#### Checking the service and up
+#### Checking that the service is up
 Send a GET command on `[csb_url]/`   
 Will return a "Hello from CSB-Service"
 

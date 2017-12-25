@@ -1,17 +1,18 @@
 package rest;
 
 import com.csb.CSBConsumer;
+import com.csb.topics.CSBMessageHubTopicsHandler;
 import common.Environment;
 import handlers.IgnoredMessageHandler;
 import handlers.MessageHandler;
 import handlers.RestMessageHandler;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,18 +33,10 @@ public class RestConsumer extends Application {
     //    TODO: Run method on create of server
     public RestConsumer() throws Exception {
         super();
-        BasicConfigurator.configure();
         ServerEventHandler serverEventHandler = new ServerEventHandler();
-//        try {
-//            MessageHubCredentials credentials = BluemixEnvironment.getMessageHubCredentials();
-//            updateJaasConfiguration(credentials.getUser(), credentials.getPassword());
-        consumer = new CSBConsumer(Environment.PRODUCTION, DEFAULT_CONSUMER_ID);
+        consumer = new CSBConsumer(Environment.PRODUCTION, DEFAULT_CONSUMER_ID, new CSBMessageHubTopicsHandler(null, null, null));
         consumer.start();
         logger.info(String.format("Consumer with id '%s' has been started successfully", DEFAULT_CONSUMER_ID));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            logger.error("Failed on starting the consumer", e);
-//        }
     }
 
     @GET
@@ -52,7 +45,7 @@ public class RestConsumer extends Application {
         JSONArray topics = new JSONArray();
         consumer.getAvailableTopics().forEach(topics::add);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("Topics", topics);
+        jsonObject.put("topics", topics);
 
         return jsonObject.toString();
     }
@@ -65,19 +58,26 @@ public class RestConsumer extends Application {
                                    @QueryParam("handler") String handlerUrl,
                                    @DefaultValue("rest") @QueryParam("type") String handlerType) {
         try {
-            MessageHandler mh;
-            if (handlerType.equals("ignore")) {
-                mh = new IgnoredMessageHandler(true);
-            } else {
-                mh = new RestMessageHandler(handlerUrl);
-            }
-            logger.info(String.format("Subscribing the consumer to topic '%s' and handler url '%s'", topic, handlerUrl));
+            MessageHandler mh = getMessageHandler(handlerUrl, handlerType);
+            logger.debug(String.format("Subscribing the consumer to topic '%s' and handler url '%s'", topic, handlerUrl));
             consumer.subscribe(topic, mh);
             logger.info(String.format("Successfully subscribed to topic '%s' with handler url '%s'", topic, handlerUrl));
             return "Successfully subscribed to topic";
         } catch (Exception e) {
             logger.error("Failed on subscribe", e);
             return "Failed to subscribe to topic";
+        }
+    }
+
+    private MessageHandler getMessageHandler(String handlerUrl, String handlerType) {
+        switch (handlerType) {
+            case "ignore":
+                return new IgnoredMessageHandler(true);
+            case "rest":
+                return new RestMessageHandler(handlerUrl);
+            default:
+                logger.error(handlerType + " Isn't a supported type");
+                throw new NotSupportedException(handlerType + " Isn't a supported type");
         }
     }
 }
