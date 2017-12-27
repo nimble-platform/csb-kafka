@@ -22,7 +22,12 @@ public class RestTopics extends Application {
 
     //    TODO: replace with onServerCreate
     static {
+        logger.info("Running the setup");
         String vcapServices = System.getenv("VCAP_SERVICES");
+        String credentials = System.getenv("MESSAGE_HUB_CREDENTIALS");
+        logger.info(credentials);
+        logger.info("######");
+
         if (vcapServices == null) {
             logger.error("Vcap services is null - the app isn't bind to any service");
         } else {
@@ -35,6 +40,8 @@ public class RestTopics extends Application {
             }
         }
     }
+
+
 
     private static CSBTopicsHandler getTopicsHandler(JsonArray messageHubJsonArray) {
         JsonObject credentials = messageHubJsonArray.get(0).getAsJsonObject().get("credentials").getAsJsonObject();

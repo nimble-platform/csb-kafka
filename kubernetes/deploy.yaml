@@ -20,6 +20,12 @@ spec:
       labels:
         app: csb-kafka
     spec:
+      env:
+      - name: MESSAGE_HUB_CREDENTIALS
+        valueFrom:
+         secretKeyRef:
+          name: messagehub-credentials
+          key: credentials.json
       containers:
       - image: nimbleplatform/csb-kafka:IMAGE_TAG
         imagePullPolicy: Always
