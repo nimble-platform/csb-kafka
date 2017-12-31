@@ -23,40 +23,43 @@ public class RestTopics extends Application {
     //    TODO: replace with onServerCreate
     static {
         logger.info("Running the setup");
-        String vcapServices = System.getenv("VCAP_SERVICES");
-        String credentials = System.getenv("MESSAGE_HUB_CREDENTIALS");
-        logger.info(credentials);
-        logger.info("######");
+//        String vcapServices = System.getenv("VCAP_SERVICES");
 
-        if (vcapServices == null) {
-            logger.error("Vcap services is null - the app isn't bind to any service");
-        } else {
-            JsonObject jsonObject = (JsonObject) (new JsonParser().parse(vcapServices));
-            JsonArray messageHubJsonArray = jsonObject.getAsJsonArray("messagehub");
-            if (messageHubJsonArray == null) {
-                logger.error("Couldn't find messagehub key in vcap services env variable");
-            } else {
-                topicsHandler = getTopicsHandler(messageHubJsonArray);
-            }
-        }
+        topicsHandler = new CSBMessageHubTopicsHandler(Environment.PRODUCTION, MainRest.API_KEY, MainRest.ADMIN_URL);
+
+//        topicsHandler = getTopicsHandler(messageHubJsonArray);
+
+//        logger.info(credentials);
+//
+//        if (vcapServices == null) {
+//            logger.error("Vcap services is null - the app isn't bind to any service");
+//        } else {
+//            JsonObject jsonObject = (JsonObject) (new JsonParser().parse(vcapServices));
+//            JsonArray messageHubJsonArray = jsonObject.getAsJsonArray("messagehub");
+//            if (messageHubJsonArray == null) {
+//                logger.error("Couldn't find messagehub key in vcap services env variable");
+//            } else {
+//                topicsHandler = getTopicsHandler(messageHubJsonArray);
+//            }
+//        }
     }
 
 
 
-    private static CSBTopicsHandler getTopicsHandler(JsonArray messageHubJsonArray) {
-        JsonObject credentials = messageHubJsonArray.get(0).getAsJsonObject().get("credentials").getAsJsonObject();
-        logger.debug("Retrieving admin url and api-key");
-        String restAdminUrl = credentials.get("kafka_admin_url").getAsString();
-        String apiKey = credentials.get("api_key").getAsString();
-
-        if (apiKey == null || restAdminUrl == null) {
-            logger.error("Failed to initialise admin url and api key");
-            throw new RuntimeException("Unable to set the topics handler");
-        } else {
-            logger.debug("Admin url and api-key were set successfully");
-        }
-        return new CSBMessageHubTopicsHandler(Environment.PRODUCTION, apiKey, restAdminUrl);
-    }
+//    private static CSBTopicsHandler getTopicsHandler(String restAdminUrl, String apiKey ) {
+//        JsonObject credentials = messageHubJsonArray.get(0).getAsJsonObject().get("credentials").getAsJsonObject();
+//        logger.debug("Retrieving admin url and api-key");
+//        String restAdminUrl = credentials.get("kafka_admin_url").getAsString();
+//        String apiKey = credentials.get("api_key").getAsString();
+//
+//        if (apiKey == null || restAdminUrl == null) {
+//            logger.error("Failed to initialise admin url and api key");
+//            throw new RuntimeException("Unable to set the topics handler");
+//        } else {
+//            logger.debug("Admin url and api-key were set successfully");
+//        }
+//        return new CSBMessageHubTopicsHandler(Environment.PRODUCTION, apiKey, restAdminUrl);
+//    }
 
     @POST
     @Path("/create/{topic_name}")

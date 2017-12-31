@@ -34,7 +34,7 @@ public class RestConsumer extends Application {
     public RestConsumer() throws Exception {
         super();
         ServerEventHandler serverEventHandler = new ServerEventHandler();
-        consumer = new CSBConsumer(Environment.PRODUCTION, DEFAULT_CONSUMER_ID, new CSBMessageHubTopicsHandler(null, null, null));
+        consumer = new CSBConsumer(Environment.PRODUCTION, DEFAULT_CONSUMER_ID, new CSBMessageHubTopicsHandler(Environment.PRODUCTION, MainRest.API_KEY, MainRest.ADMIN_URL));
         consumer.start();
         logger.info(String.format("Consumer with id '%s' has been started successfully", DEFAULT_CONSUMER_ID));
     }

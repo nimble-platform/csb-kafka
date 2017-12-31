@@ -109,7 +109,7 @@ public class RESTRequest {
     }
 
     /**
-     * Execute a GET request against the specified REST target.
+     * Execute a POST request against the specified REST target.
      *
      * @param target
      *            {String} The REST API target to run against (for example,
