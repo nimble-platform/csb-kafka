@@ -20,7 +20,6 @@ public class RestProducer extends Application {
 
     public RestProducer() throws Exception {
         super();
-        new ServerEventHandler();
         producer = new CSBProducer(Environment.PRODUCTION);
         logger.debug("Producer has been started successfully");
     }
