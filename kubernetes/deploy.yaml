@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -14,7 +14,7 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
     type: RollingUpdate
-  revisionHistoryLimit: 5
+  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
