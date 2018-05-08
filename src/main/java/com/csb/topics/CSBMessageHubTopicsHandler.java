@@ -12,16 +12,13 @@ import java.util.Properties;
 import java.util.Set;
 
 //TODO: load the list of topics on start
-//TODO: find how replication is set in message hub
 public class CSBMessageHubTopicsHandler implements CSBTopicsHandler {
     private final static Logger logger = Logger.getLogger(CSBZookeeperTopicsHandler.class);
 
     private static final long _24H_IN_MILLISECONDS = 3600000L * 24;
 
-    private final static Object completeSync = new Object();
     private final static Object topicsSync = new Object();
     final private int partitions;
-    final private int replications;
 
     private final HashSet<String> topics = new HashSet<>();
     private final String apiKey;
@@ -35,7 +32,6 @@ public class CSBMessageHubTopicsHandler implements CSBTopicsHandler {
         Properties prop = PropertiesLoader.loadProperties(PropertiesLoader.TOPIC_CREATOR, environment);
 
         partitions = Integer.parseInt(prop.getProperty("kafka.partitions"));
-        replications = Integer.parseInt(prop.getProperty("kafka.replications"));
 
         RESTRequest restApi = new RESTRequest(adminUrl, apiKey);
         try {
@@ -68,7 +64,6 @@ public class CSBMessageHubTopicsHandler implements CSBTopicsHandler {
                     new int[]{422});
 
             logger.info(String.format("Topic named '%s' was created with POST result - '%s'", topic, postResult));
-            logger.debug(String.format("Adding topic '%s' to existing topics list", topic));
             topics.add(topic);
         } catch (Exception e) {
             logger.error(String.format("Exception on creating topic '%s' ", topic), e);

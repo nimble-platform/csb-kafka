@@ -1,5 +1,7 @@
 package rest;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -29,11 +31,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationPath("/")
 @Path("/")
-@WebListener
 @Singleton
 public class MainRest extends Application implements ServletContextListener {
     private final static Logger logger = Logger.getLogger(MainRest.class);
-    //    private final boolean isOnBluemix;
 
     public static final String API_KEY;
     public static final String ADMIN_URL;
@@ -44,7 +44,6 @@ public class MainRest extends Application implements ServletContextListener {
             logger.error("Failed to get message hub credentials - exiting");
             System.exit(1);
         }
-        logger.info(credentials);
         JsonObject jsonObject = (JsonObject) (new JsonParser().parse(credentials));
         ADMIN_URL = jsonObject.get("kafka_admin_url").getAsString();
         API_KEY = jsonObject.get("api_key").getAsString();
@@ -58,7 +57,6 @@ public class MainRest extends Application implements ServletContextListener {
     }
 
     @GET
-    @Path("/")
     public String hello() {
         return "Hello from CSB-Service";
     }
@@ -68,37 +66,9 @@ public class MainRest extends Application implements ServletContextListener {
 
         InputStream template = MainRest.class.getClassLoader().getResourceAsStream("jaas.conf.template");
         String jaasTemplate = new BufferedReader(new InputStreamReader(template)).lines().parallel().collect(Collectors.joining("\n"));
-
-//        String vcapServices = System.getenv("VCAP_SERVICES");
-//        isOnBluemix = isRunningOnBluemix(vcapServices);
-//        logEnvironment();
-
-//        if (vcapServices == null) {
-//            logger.error("Vcap services is null - the app isn't bind to message hub");
-//        } else {
-//            JsonObject jsonObject = (JsonObject) (new JsonParser().parse(vcapServices));
-//            JsonArray messageHubJsonArray = jsonObject.getAsJsonArray("messagehub");
-//            if (messageHubJsonArray == null) {
-//                logger.error("Couldn't find messagehub key in vcap services env variable");
-//                return;
-//            }
-//            JsonObject credentials = messageHubJsonArray.get(0).getAsJsonObject().get("credentials").getAsJsonObject();
-//            logger.info("Initialising the messagehub credentials");
-//            String user = credentials.get("user").getAsString();
-//            String password = credentials.get("password").getAsString();
-            initialiseCredentials(jaasTemplate, API_KEY.substring(0,17), API_KEY.substring(17));
-//        }
+        initialiseCredentials(jaasTemplate, API_KEY.substring(0,17), API_KEY.substring(17));
     }
 
-//    private void logEnvironment() {
-//        if (isOnBluemix) {
-//            logger.info("Running on bluemix");
-//        } else {
-//            logger.info("Not running on bluemix");
-//        }
-//    }
-
-    @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         System.out.println("Running on created");
     }
@@ -125,15 +95,4 @@ public class MainRest extends Application implements ServletContextListener {
             throw e;
         }
     }
-
-//    //    TODO: fix to find if running on bluemix - buildpack to return true
-//    private boolean isRunningOnBluemix(String vcapServices) {
-//        String userDir = System.getProperty("user.dir");
-//        File buildpack = new File(userDir + File.separator + ".java-buildpack");
-//
-//        if (buildpack.exists() && (vcapServices == null)) {
-//            throw new IllegalStateException("ASSERTION FAILED: buildpack.exists() but VCAP_SERVICES==null");
-//        }
-//        return buildpack.exists();
-//    }
 }
