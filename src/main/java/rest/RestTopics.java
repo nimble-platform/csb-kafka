@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
 
 @Path("/topics")
 public class RestTopics extends Application {
@@ -27,17 +28,17 @@ public class RestTopics extends Application {
 
     @POST
     @Path("/create/{topic_name}")
-    public static String createTopic(@PathParam("topic_name") String topicName) {
+    public static Response createTopic(@PathParam("topic_name") String topicName) {
         logger.info(String.format("Trying to create topic named '%s'", topicName));
         if (topicsHandler.isTopicsExists(topicName)) {
-            return String.format("Topic '%s' already exists - failed to create", topicName);
+            return Response.status(200).entity(String.format("Topic '%s' already exists - failed to create", topicName)).build();
         }
         try {
             topicsHandler.createTopicSync(topicName);
-            return String.format("Topic '%s' was created successfully", topicName);
+            return Response.status(200).entity(String.format("Topic '%s' was created successfully", topicName)).build();
         } catch (Exception e) {
             logger.error(String.format("Failed to create topic '%s'", e));
-            return "Failed to create topic - " + e.getMessage();
+            return Response.status(401).entity("Failed to create topic - " + e.toString()).build();
         }
     }
 

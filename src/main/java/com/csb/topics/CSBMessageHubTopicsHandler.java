@@ -13,7 +13,7 @@ import java.util.Set;
 
 //TODO: load the list of topics on start
 public class CSBMessageHubTopicsHandler implements CSBTopicsHandler {
-    private final static Logger logger = Logger.getLogger(CSBZookeeperTopicsHandler.class);
+    private final static Logger logger = Logger.getLogger(CSBMessageHubTopicsHandler.class);
 
     private static final long _24H_IN_MILLISECONDS = 3600000L * 24;
 
