@@ -4,17 +4,10 @@ import com.csb.CSBProducer;
 import common.Environment;
 import org.apache.log4j.Logger;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Entity;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 
 /**
  * Created by evgeniyh on 05/04/17.
@@ -42,7 +35,7 @@ public class RestProducer extends Application {
         }
         try {
 //            System.out.println("Available topics " + RestTopics.listTopics("https://kafka-admin-prod02.messagehub.services.eu-gb.bluemix.net:443", apiKey));
-            String restResponse = RestTopics.createTopic(topic);
+            Response restResponse = RestTopics.createTopic(topic);
             logger.info("Created topic " + topic + " - " + restResponse);
         } catch (Exception e) {
             logger.info("Error on creating topic " + e.getMessage());
