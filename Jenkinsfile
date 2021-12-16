@@ -10,9 +10,10 @@ node ('nimble-jenkins-slave') {
     }
 
     stage ('Push docker image') {
-        withDockerRegistry([credentialsId: 'NimbleDocker']) {
-            sh 'docker push nimbleplatform/csb-kafka:${BUILD_NUMBER}'
-        }
+        echo "docker push disabled"
+#        withDockerRegistry([credentialsId: 'NimbleDocker']) {
+#            sh 'docker push nimbleplatform/csb-kafka:${BUILD_NUMBER}'
+#        }
     }
 
     stage ('Deploy') {
